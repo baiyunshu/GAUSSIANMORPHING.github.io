@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
+  <!-- Replace the content tag with appropriate information -->
+  <meta name="description" content="DESCRIPTION META TAG">
+  <meta property="og:title" content="SOCIAL MEDIA TITLE TAG" />
+  <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG" />
+  <meta property="og:url" content="URL OF THE WEBSITE" />
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
+  <meta property="og:image" content="static/image/your_banner_image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
++
+
+  <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
+  <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
+  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
+  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Keywords for your paper to be indexed by-->
+  <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <title>Academic Project Page</title>
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script src="static/js/bulma-carousel.min.js"></script>
+  <script src="static/js/bulma-slider.min.js"></script>
+  <script src="static/js/index.js"></script>
+</head>
+
+<body>
+
+
+<section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">GaussianMorphing:Mesh-Guided 3D Gaussians for Semantic-Aware Object Morphing
+            </h1>
+            <div class="is-size-5 publication-authors">
+              <!-- Paper authors -->
+              <span class="author-block">Anonymous submission</span>
+            </div>
+
+            <!-- <div class="is-size-5 publication-authors">
+                    <span class="author-block">Under Review</span>
+                  </div> -->
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- Arxiv PDF link -->
+                <!-- <span class="link-block">
+                  <a href="https://arxiv.org/pdf/<ARXIV PAPER ID>.pdf" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span> -->
+
+                <!-- Supplementary PDF link -->
+                <!-- <span class="link-block">
+                  <a href="../When Gaussians Meet Geometry Semantic-Aware Morphing of 3D Objects.pdf" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Supplementary</span>
+                  </a>
+                </span> -->
+
+                <!-- Github link -->
+                <!-- <span class="link-block">
+                    <a href="https://github.com/YOUR REPO HERE" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span> -->
+
+                <!-- ArXiv abstract Link -->
+                <!-- <span class="link-block">
+                  <a href="https://arxiv.org/abs/<ARXIV PAPER ID>" target="_blank"
+                  class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span> -->
+              </div>
+              
+              <!-- Added image here -->
+              <div class="row center" style="width: 100%; margin: 2em auto 0 auto">
+                <div class="col s10 offset-s1">
+                  <img class="responsive-img" src="static/images/teaser.png" style="max-width: 100%; height: auto;"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Teaser video-->
+  <!--<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video poster="" id="tree" autoplay controls muted loop height="100%">-->
+  <!-- Your video here -->
+  <!--<source src="static/videos/banner_video.mp4"
+        type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        开头介绍
+      </h2>
+    </div>
+  </div>
+</section>-->>
+  <!-- End teaser video -->
+
+  <!-- Paper abstract - 灰色背景 -->
+  <!-- <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="row center" style="width: 100%; margin: 1em auto 1em auto">
+            <div class="col s10 offset-s1">
+              <img class="responsive-img" src="static/images/teaser.png" />
+            </div>
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              We introduce <strong>GaussianMorphing</strong>, a novel framework for semantic-aware 3D shape and texture morphing from
+              multiview images. Unlike conventional approaches constrained to point clouds or correspondence-aligned
+              untextured data, our approach leverages mesh-guided 3D Gaussian Splatting (3DGS) to achieve high-fidelity
+              appearance and geometry representation. On the one hand, our unified mesh-guided Gaussian deformation
+              strategy ensures geometrically consistent deformation by binding 3DGS points to reconstructed mesh patches
+              while preserving texture fidelity through topology-aware constraints. On the other hand, the framework
+              establishes unsupervised semantic correspondence by exploiting mesh topology as a geometric prior, while
+              maintaining structural integrity through physically plausible point trajectory constraints. This
+              integrated approach maintains both local geometric details and global semantic coherence throughout the
+              morphing process without requiring labeled data. Experimental results show that GaussianMorphing
+              outperforms prior 2D/3D morphing methods, with a color consistency (∆E) reduction of 22.2% and an EI
+              reduction of 26.2% on our proposed <strong>TexMorph</strong> benchmark.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section> -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <!-- Image moved above the abstract title -->
+
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6;">
+            <p>
+              We introduce <strong>GaussianMorphing</strong>, a novel framework for semantic-aware 3D shape and texture morphing from
+              multiview images. Unlike conventional approaches constrained to point clouds or correspondence-aligned
+              untextured data, our approach leverages mesh-guided 3D Gaussian Splatting (3DGS) to achieve high-fidelity
+              appearance and geometry representation. On the one hand, our unified mesh-guided Gaussian deformation
+              strategy ensures geometrically consistent deformation by binding 3DGS points to reconstructed mesh patches
+              while preserving texture fidelity through topology-aware constraints. On the other hand, the framework
+              establishes unsupervised semantic correspondence by exploiting mesh topology as a geometric prior, while
+              maintaining structural integrity through physically plausible point trajectory constraints. This
+              integrated approach maintains both local geometric details and global semantic coherence throughout the
+              morphing process without requiring labeled data. Experimental results show that GaussianMorphing
+              outperforms prior 2D/3D morphing methods, with a color consistency (∆E) reduction of 22.2% and an EI
+              reduction of 26.2% on our proposed <strong>TexMorph</strong> benchmark.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- End paper abstract -->
+
+  <!-- Paper abstract -->
+
+  <section class="section hero">
+    <div class="container is-fullhd">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3" style="white-space: nowrap;">Method Overview</h2>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section hero" style="padding-bottom: 1rem;">
+    <div class="container is-fullhd">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <!-- 大图显示 -->
+          <div style="width: 100%; margin: 2em auto 0;">
+            <img src="static/images/pipeline.jpg" style="width: 100%; max-width: 1200px; height: auto;"
+              alt="Method Overview" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section hero is-small">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6;">
+            <p>
+              We propose <strong>GaussianMorphing</strong>, a novel framework for textured 3D morphing. The input consists of image
+              sequences for the source object X and target object Y. To achieve edge-continuous and smooth results, we
+              implement a mesh-guided strategy by extracting surface meshes from the 3D representations obtained by 3D
+              Gaussian Splatting and bind Gaussian points to the mesh. Geometric features, derived from the mesh, are
+              used to compute a correspondence matrix ΠXY , while texture features are extracted from the Gaussian
+              points. A series of time steps t ∈ [0,1] is fed into the interpolator Ω, generating intermediate shapes
+              X(t) and Y(t). The output is a high-quality, textured 3D morphing result, seamlessly blending geometry and
+              appearance.(Up:3D morphing results with Blender. Down:geometric correspondence with Matplotlib)
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+  <!-- End paper abstract -->
+
+  <!-- Paper abstract -->
+  <section class="section hero is-light">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+
+          <!-- 标题 -->
+          <h2 class="title is-3">TexMorph Benchmark</h2>
+
+          <!-- 图片 -->
+          <div style="width: 100%; margin: 1em auto;">
+            <img src="static/images/dataset.png" style="width: 100%; height: auto;" alt="TexMorph Benchmark Image">
+          </div>
+
+          <!-- 描述文字 -->
+          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6;">
+            <p>
+Our new morphing benchmark, TexMorph, leverages high-precision synthetic object models crafted by artists and 3D object models captured from real scenes, forming a diverse dataset that spans multiple object categories.The dataset includes over ten categories of objects, such as synthetic and real-world collected (scanning model and photo) fruits, animals, furniture, vehicles, and more.We utilize this benchmark to conduct both qualitative and quantitative tests on the baselines mentioned below, evaluating the superiority of our method.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- End paper abstract -->
+
+
+  <!-- <section class="hero is-small">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h2 class="title is-3">Result Gallery</h2>
+
+      <div id="results-carousel" class="carousel results-carousel">
+
+
+        <div class="item" style="position: relative;">
+          <h2 class="title is-3 has-text-left">合成数据</h2>
+          <div class="container" style="max-width: 500px; margin: 0 auto;">
+            <img src="static/images/appleyin.png" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">苹果香蕉</h2>
+          </div>
+        </div>
+
+
+        <div class="item" style="position: relative;">
+          <h2 class="title is-3 has-text-left">合成数据</h2>
+          <div class="container" style="max-width: 500px; margin: 0 auto;">
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">西葫芦橘子</h2>
+          </div>
+        </div>
+
+
+        <div class="item" style="position: relative;">
+          <h2 class="title is-3 has-text-left">Real Scan data</h2>
+          <div class="container" style="max-width: 500px; margin: 0 auto;">
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">真实扫描结果</h2>
+          </div>
+        </div>
+
+
+        <div class="item" style="position: relative;">
+          <h2 class="title is-3 has-text-left">Real-World Photo</h2>
+          <div class="container" style="max-width: 500px; margin: 0 auto;">
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">真实图片结果</h2>
+          </div>
+        </div>
+
+
+        <div class="item" style="position: relative;">
+          <h2 class="title is-3 has-text-left">Real-World Photo</h2>
+          <div class="container" style="max-width: 500px; margin: 0 auto;">
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">真实图片结果</h2>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+  <!-- Image carousel -->
+  <section class="hero is-small">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <h2 class="title is-3">Result Gallery</h2>
+        <div id="results-carousel" class="carousel results-carousel">
+          <div class="item" style="position: relative;">
+            <h2 class="title is-4 has-text-left">Synthetic Data</h2>
+            <div class="container">
+              <img src="static/images/appleyin.png" alt="MY ALT TEXT" />
+              <h2 class="subtitle has-text-centered">apple -> banana</h2>
+            </div>
+          </div>
+
+
+          <div class="item" style="position: relative;">
+            <h2 class="title is-4 has-text-left">Synthetic Data</h2>
+            <img src="static/images/zuchiyin.png" alt="MY ALT TEXT" />
+            <h2 class="subtitle has-text-centered">zucchini -> orange</h2>
+          </div>
+
+          <div class="item" style="position: relative;">
+            <h2 class="title is-4 has-text-left">Real Scan Data</h2>
+            <img src="static/images/bowyin.png" alt="MY ALT TEXT" />
+            <h2 class="subtitle has-text-centered">bowl -> plate </h2>
+          </div>
+
+          <div class="item" style="position: relative;">
+            <h2 class="title is-4 has-text-left">Real-World Photo</h2>
+            <img src="static/images/mush1.png" alt="MY ALT TEXT" />
+            <h2 class="subtitle has-text-centered">shiitake -> morel</h2>
+          </div>
+
+          <div class="item" style="position: relative;">
+            <h2 class="title is-4 has-text-left">Real-World Photo</h2>
+            <img src="static/images/mush2.png" alt="MY ALT TEXT" />
+            <h2 class="subtitle has-text-centered">shiitake -> white mushroom</h2>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- Image carousel -->
+
+  <!-- <section class="hero is-small">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h2 class="title is-3">Result Gallery</h2>
+
+      <div id="results-carousel" class="carousel results-carousel">
+
+        
+        <div class="item" style="width: 50%; margin: 0 auto;">
+          <div class="container" style="max-width: 100%; padding: 0 1em;">
+           
+            <h3 class="subtitle is-6 has-text-left" style="margin-bottom: 0.5em;">Morph Step 1</h3>
+            
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">苹果香蕉</h2>
+          </div>
+        </div> -->
+
+  <!-- 图片项 2 -->
+  <!-- <div class="item" style="width: 50%; margin: 0 auto;">
+          <div class="container" style="max-width: 100%; padding: 0 1em;">
+            <h3 class="subtitle is-6 has-text-left" style="margin-bottom: 0.5em;">Morph Step 2</h3>
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">西葫芦橘子</h2>
+          </div>
+        </div> -->
+
+  <!-- 图片项 3 -->
+  <!-- <div class="item" style="width: 50%; margin: 0 auto;">
+          <div class="container" style="max-width: 100%; padding: 0 1em;">
+            <h3 class="subtitle is-6 has-text-left" style="margin-bottom: 0.5em;">Real Scan</h3>
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">真实扫描结果</h2>
+          </div>
+        </div> -->
+
+  <!-- 图片项 4 -->
+  <!-- <div class="item" style="width: 50%; margin: 0 auto;">
+          <div class="container" style="max-width: 100%; padding: 0 1em;">
+            <h3 class="subtitle is-6 has-text-left" style="margin-bottom: 0.5em;">Real Image</h3>
+            <img src="static/images/tupian/8.jpg" alt="MY ALT TEXT" style="width: 100%; height: auto; border-radius: 8px;" />
+            <h2 class="subtitle has-text-centered" style="margin-top: 0.5rem;">真实图片结果</h2>
+          </div>
+        </div>
+        experiment
+        <div class="col s10 offset-s1">
+              <img class="responsive-img" src="static/images/experiments.jpg" />
+            </div>
+          </div>
+          <div class="content has-text-justified">
+            <p>
+              Qualitative morphing results with non-isometric deformations, demonstrating robust interpolation under
+              challenging geometric conditions
+              <br>(Up: synthetic datas; Middle: real-world scanned objects from GSO (Downs et al. 2022); Bottom:
+              real-world photos).
+            </p>
+          </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+
+  <!-- End image carousel -->
+
+  <section class="section hero is-light">
+    <div class="container is-fullhd">
+      <div class="columns is-centered has-text-centered">
+        <div class="column">
+          <h2 class="title is-3">Experiment</h2>
+          <div style="width: 100%; margin: 2em auto 0;">
+            <img src="static/images/compareall.jpg" style="width: 100%; max-width: 1200px; height: auto;"
+              alt="Experiment Comparison" />
+          </div>
+          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6; margin-top: 2rem;">
+            <p>
+Qualitative Comparison of Morphing Methods on the Benchmark Dataset. The benchmark dataset evaluates four
+methods: (1) DiffMorpher (Zhang et al. 2024b) and (2) FreeMorph (Cao et al. 2025) for image morphing, (3) NeuroMorph
+(Eisenberger et al. 2021) for 3D shape morphing without textures, (4) MorphFlow (Tsai, Sun, and Chen 2022) for textured
+multi-view results but lacking true geometric information, and (5) Our Method, which generates textured 3D morphing with
+geometric details from image inputs.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Youtube video -->
+
+  <!-- End youtube video -->
+
+  <!-- Paper abstract -->
+  <section class="section hero is small">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">User Study</h2>
+          <div class="row center" style="width: 100%; margin: 1em auto 1em auto">
+            <div class="col s10 offset-s1">
+              <img class="responsive-img" src="static/images/userstudy.jpg" />
+            </div>
+          </div>
+          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6;">
+            <p>
+              Comparing our method with the baseline methods in terms of color consistency, structural similarity, and
+              edge continuity. A higher percentage of participants preferred our results across all metrics.
+              <!--Conclusion-->
+
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- End paper abstract -->
+
+  <section class="section hero is-light">
+    <div class="hero-body">
+      <div class="container has-text-centered">
+        <!-- Paper video. -->
+        <h2 class="title is-3">Video Presentation</h2>
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+
+            <div class="publication-video">
+              <!-- Youtube embed code here -->
+              <iframe src="../demo.mp4" frameborder="0" allow="autoplay; encrypted-media"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Paper poster -->
+  <!-- <section class="hero is-small ">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title">Poster</h2>
+
+      <iframe  src="static/pdfs/AAAI_Press_Formatting_Instructions_for_Authors_Using_LaTeX(1).pdf" width="100%" height="550">
+          </iframe>
+        
+      </div>
+    </div>
+  </section> -->
+  <!--End paper poster -->
+
+
+  <!--BibTex citation -->
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <h2 class="title">BibTeX</h2>
+      <pre><code>BibTex Code Here</code></pre>
+    </div>
+  </section>
+  <!--End BibTex citation -->
+
+
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content">
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Statcounter tracking code -->
+
+  <!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+
+  <!-- End of Statcounter Code -->
+
+</body>
+
+</html>
