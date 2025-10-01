@@ -258,65 +258,60 @@ Our new morphing benchmark, TexMorph, leverages high-precision synthetic object 
 
 
 
-  <!-- Image carousel -->
-  <section class="hero is-small">
-    <div class="hero-body">
-      <div class="container has-text-centered">
-        <h2 class="title is-3">Result Gallery</h2>
-        <div id="results-carousel" class="carousel results-carousel">
-          <div class="item" style="position: relative;">
-            <h2 class="title is-4 has-text-left">Synthetic Data</h2>
-            <div class="container">
-              <img src="static/images/appleyin.png" alt="MY ALT TEXT" />
-              <h2 class="subtitle has-text-centered">apple -> banana</h2>
-            </div>
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container has-text-centered">
+      <h2 class="title is-3">Result Gallery</h2>
+      <div id="results-carousel" class="carousel results-carousel" style="max-width: 800px; margin: 0 auto;">
+        <div class="item" style="position: relative; margin-bottom: 30px;">
+          <h2 class="title is-4 has-text-left">Synthetic Data</h2>
+          <div class="container">
+            <img src="static/images/appleyin.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
+            <h2 class="subtitle has-text-centered">apple -> banana</h2>
           </div>
+        </div>
 
+        <div class="item" style="position: relative; margin-bottom: 30px;">
+          <h2 class="title is-4 has-text-left">Synthetic Data</h2>
+          <img src="static/images/zuchiyin.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
+          <h2 class="subtitle has-text-centered">zucchini -> orange</h2>
+        </div>
 
-          <div class="item" style="position: relative;">
-            <h2 class="title is-4 has-text-left">Synthetic Data</h2>
-            <img src="static/images/zuchiyin.png" alt="MY ALT TEXT" />
-            <h2 class="subtitle has-text-centered">zucchini -> orange</h2>
-          </div>
+        <div class="item" style="position: relative; margin-bottom: 30px;">
+          <h2 class="title is-4 has-text-left">Real Scan Data</h2>
+          <img src="static/images/bowyin.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
+          <h2 class="subtitle has-text-centered">bowl -> plate</h2>
+        </div>
 
-          <div class="item" style="position: relative;">
-            <h2 class="title is-4 has-text-left">Real Scan Data</h2>
-            <img src="static/images/bowyin.png" alt="MY ALT TEXT" />
-            <h2 class="subtitle has-text-centered">bowl -> plate </h2>
-          </div>
+        <div class="item" style="position: relative; margin-bottom: 30px;">
+          <h2 class="title is-4 has-text-left">Real-World Photo</h2>
+          <img src="static/images/mush1.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
+          <h2 class="subtitle has-text-centered">shiitake -> morel</h2>
+        </div>
 
-          <div class="item" style="position: relative;">
-            <h2 class="title is-4 has-text-left">Real-World Photo</h2>
-            <img src="static/images/mush1.png" alt="MY ALT TEXT" />
-            <h2 class="subtitle has-text-centered">shiitake -> morel</h2>
-          </div>
-
-          <div class="item" style="position: relative;">
-            <h2 class="title is-4 has-text-left">Real-World Photo</h2>
-            <img src="static/images/mush2.png" alt="MY ALT TEXT" />
-            <h2 class="subtitle has-text-centered">shiitake -> white mushroom</h2>
-          </div>
-
+        <div class="item" style="position: relative; margin-bottom: 30px;">
+          <h2 class="title is-4 has-text-left">Real-World Photo</h2>
+          <img src="static/images/mush2.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
+          <h2 class="subtitle has-text-centered">shiitake -> white mushroom</h2>
         </div>
       </div>
     </div>
-  </section>
-
+  </div>
+</section>
 
 
 
   <!-- End image carousel -->
-
-  <section class="section hero is-light">
+<section class="section hero is-light">
     <div class="container is-fullhd">
       <div class="columns is-centered has-text-centered">
         <div class="column">
           <h2 class="title is-3">Experiment</h2>
-          <div style="width: 100%; margin: 2em auto 0;">
-            <img src="static/images/compareall.jpg" style="width: 100%; max-width: 1200px; height: auto;"
+          <div style="width: 100%; max-width: 900px; margin: 2em auto 0;">
+            <img src="static/images/compareall.jpg" style="width: 100%; height: auto;"
               alt="Experiment Comparison" />
           </div>
-          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6; margin-top: 2rem;">
+          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6; margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto;">
             <p>
 Qualitative Comparison of Morphing Methods on the Benchmark Dataset. The benchmark dataset evaluates four
 methods: (1) DiffMorpher (Zhang et al. 2024b) and (2) FreeMorph (Cao et al. 2025) for image morphing, (3) NeuroMorph
