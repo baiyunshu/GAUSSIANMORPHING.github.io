@@ -1,412 +1,836 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- Meta tags for social media banners, these should be filled in appropriatly as they are your "business card" -->
-  <!-- Replace the content tag with appropriate information -->
-  <meta name="description" content="DESCRIPTION META TAG">
-  <meta property="og:title" content="SOCIAL MEDIA TITLE TAG" />
-  <meta property="og:description" content="SOCIAL MEDIA DESCRIPTION TAG TAG" />
-  <meta property="og:url" content="URL OF THE WEBSITE" />
-  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X630-->
-  <meta property="og:image" content="static/image/your_banner_image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-+
-
-  <meta name="twitter:title" content="TWITTER BANNER TITLE META TAG">
-  <meta name="twitter:description" content="TWITTER BANNER DESCRIPTION META TAG">
-  <!-- Path to banner image, should be in the path listed below. Optimal dimenssions are 1200X600-->
-  <meta name="twitter:image" content="static/images/your_twitter_banner_image.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <!-- Keywords for your paper to be indexed by-->
-  <meta name="keywords" content="KEYWORDS SHOULD BE PLACED HERE">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SemMorph3D · Unsupervised Semantic-Aware 3D Morphing</title>
 
+  <meta name="description" content="SemMorph3D: Unsupervised Semantic-Aware 3D Morphing via Mesh-Guided Gaussians.">
+  <meta property="og:title" content="SemMorph3D: Semantic-Aware 3D Morphing" />
+  <meta property="og:description" content="A mesh-guided Gaussian framework for semantic-aware 3D shape and texture morphing." />
+  <meta property="og:image" content="project_page/static/images/teaser.png" />
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="keywords" content="3D morphing, gaussian splatting, mesh-guided, semantic correspondence">
 
-  <title>GaussianMorphing</title>
-  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="project_page/static/images/favicon.ico">
 
-  <link rel="stylesheet" href="static/css/bulma.min.css">
-  <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="static/css/index.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
-  <script defer src="static/js/fontawesome.all.min.js"></script>
-  <script src="static/js/bulma-carousel.min.js"></script>
-  <script src="static/js/bulma-slider.min.js"></script>
-  <script src="static/js/index.js"></script>
+  <style>
+    :root {
+      --bg: #0b0d13;
+      --bg-soft: #10131c;
+      --panel: #131722;
+      --panel-2: #1a1f2e;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --text: #e8ecf4;
+      --text-dim: #a6adbb;
+      --text-muted: #6b7280;
+      --accent-1: #7c5cff;
+      --accent-2: #23d5ab;
+      --accent-3: #ff6b9d;
+      --accent-grad: linear-gradient(115deg, #7c5cff 0%, #23d5ab 50%, #ffb86b 100%);
+      --shadow-lg: 0 30px 80px -20px rgba(0,0,0,0.55), 0 8px 32px -12px rgba(124,92,255,0.25);
+      --radius-lg: 20px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background */
+    .bg-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .bg-orbs::before,
+    .bg-orbs::after {
+      content: ''; position: absolute;
+      width: 55vw; height: 55vw;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.45;
+      animation: float 18s ease-in-out infinite;
+    }
+    .bg-orbs::before {
+      background: radial-gradient(circle, #7c5cff 0%, transparent 60%);
+      top: -15%; left: -10%;
+    }
+    .bg-orbs::after {
+      background: radial-gradient(circle, #23d5ab 0%, transparent 60%);
+      bottom: -20%; right: -15%;
+      animation-delay: -9s;
+    }
+    .bg-grid {
+      position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 100%);
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50%      { transform: translate(3%, 4%) scale(1.08); }
+    }
+
+    /* Top nav */
+    .topnav {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .topnav-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 14px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 20px;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; letter-spacing: -0.01em;
+      font-size: 16px;
+    }
+    .brand-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: var(--accent-grad);
+      box-shadow: 0 8px 20px -6px rgba(124,92,255,0.55);
+      position: relative;
+    }
+    .brand-mark::after {
+      content:''; position:absolute; inset:4px; border-radius:5px;
+      background: var(--bg); opacity: 0.35;
+    }
+    .nav-links { display: flex; gap: 6px; flex-wrap: wrap; }
+    .nav-links a {
+      color: var(--text-dim); text-decoration: none;
+      font-size: 13.5px; font-weight: 500;
+      padding: 7px 12px; border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--panel); }
+    @media (max-width: 760px) { .nav-links { display: none; } }
+
+    /* Generic */
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 28px; }
+    .container-wide { max-width: 1300px; margin: 0 auto; padding: 0 28px; }
+    section.block { padding: 80px 0; position: relative; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 7px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: 100px;
+      background: var(--panel);
+    }
+    .eyebrow .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent-2); box-shadow: 0 0 10px var(--accent-2);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text);
+      margin: 0;
+    }
+    .section-title {
+      font-size: clamp(32px, 4vw, 44px);
+      line-height: 1.1;
+      margin: 14px 0 14px;
+    }
+    .section-sub {
+      color: var(--text-dim);
+      font-size: 16px;
+      max-width: 680px;
+    }
+    .gradient-text {
+      background: var(--accent-grad);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Hero */
+    .hero { padding: 90px 0 60px; text-align: center; position: relative; }
+    .badge-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 26px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 12.5px; font-weight: 500;
+      padding: 6px 14px; border-radius: 100px;
+      border: 1px solid var(--border-strong);
+      background: var(--panel);
+      color: var(--text-dim);
+    }
+    .badge.primary {
+      border-color: rgba(124,92,255,0.45);
+      background: #1c1731;
+      color: #c7b9ff;
+    }
+    h1.title-hero {
+      font-size: clamp(28px, 4.2vw, 46px);
+      line-height: 1.1;
+      max-width: 900px;
+      margin: 0 auto 18px;
+      letter-spacing: -0.025em;
+    }
+    .subtitle-hero {
+      color: var(--text-dim);
+      font-size: clamp(15px, 1.45vw, 17.5px);
+      max-width: 720px;
+      margin: 0 auto 28px;
+    }
+
+    .authors {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      color: var(--text);
+      max-width: 1000px;
+      margin: 0 auto 14px;
+      line-height: 1.75;
+    }
+    .authors .name { font-weight: 600; }
+    .authors sup { color: var(--accent-1); font-weight: 600; font-size: 0.78em; margin-left: 1px; }
+    .affils {
+      font-size: 17.5px;
+      color: var(--text-dim);
+      max-width: 1000px;
+      margin: 0 auto 32px;
+      line-height: 1.85;
+    }
+    .affils sup { color: var(--accent-1); font-weight: 600; font-size: 0.8em; margin-right: 3px; }
+    .affils .sep { color: var(--text-muted); margin: 0 10px; }
+    .corresponding {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .cta-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 56px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 11px 20px; border-radius: 100px;
+      font-size: 14px; font-weight: 500;
+      text-decoration: none;
+      border: 1px solid var(--border-strong);
+      background: var(--panel);
+      color: var(--text);
+      transition: all 0.25s ease;
+    }
+    .btn:hover {
+      background: var(--panel-2);
+      border-color: rgba(255,255,255,0.25);
+      transform: translateY(-1px);
+    }
+    .btn-primary {
+      background: var(--accent-grad);
+      color: #0b0d13; font-weight: 600;
+      border: none;
+      box-shadow: 0 12px 30px -10px rgba(124,92,255,0.55);
+    }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+    .morph-strip {
+      display: flex; justify-content: center; align-items: center; gap: 24px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px; color: var(--text-muted);
+      letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 40px;
+    }
+    .morph-strip .arrow {
+      width: 60px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--text-muted), transparent);
+    }
+
+    /* Video */
+    .video-wrap {
+      max-width: 980px; margin: 0 auto;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--border-strong);
+      box-shadow: var(--shadow-lg);
+    }
+    .video-wrap video { width: 100%; display: block; }
+
+    /* Panels */
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+    }
+    .panel-image { padding: 0; overflow: hidden; background: #ffffff; }
+    .panel-image img { display: block; width: 100%; height: auto; background: #ffffff; }
+
+    .stats {
+      display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 16px; margin-top: 28px;
+    }
+    @media (max-width: 720px) { .stats { grid-template-columns: repeat(2,1fr); } }
+    .stat {
+      padding: 20px 18px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .stat .num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px; font-weight: 700;
+      background: var(--accent-grad); -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1;
+    }
+    .stat .label { margin-top: 8px; color: var(--text-dim); font-size: 13px; }
+
+    /* Feature cards */
+    .features {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      margin-top: 40px;
+    }
+    @media (max-width: 900px) { .features { grid-template-columns: 1fr; } }
+    .feature {
+      padding: 28px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: transform 0.25s ease, border-color 0.25s ease;
+    }
+    .feature:hover { transform: translateY(-3px); border-color: var(--border-strong); }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: grid; place-items: center; margin-bottom: 18px;
+      background: #1c1731;
+      color: #c7b9ff; font-size: 18px;
+      border: 1px solid rgba(124,92,255,0.25);
+    }
+    .feature h4 { font-size: 18px; margin-bottom: 8px; }
+    .feature p { color: var(--text-dim); font-size: 14.5px; margin: 0; }
+
+    /* Gallery tabs */
+    .gallery { margin-top: 28px; position: relative; }
+    .tabs {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      margin: 0 auto 22px;
+      padding: 6px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      width: fit-content;
+    }
+    .tab {
+      background: transparent; border: none;
+      color: var(--text-dim);
+      font-family: inherit; font-size: 13.5px; font-weight: 500;
+      padding: 9px 18px; border-radius: 100px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: #0b0d13;
+      background: var(--accent-grad);
+      font-weight: 600;
+      box-shadow: 0 6px 18px -6px rgba(124,92,255,0.6);
+    }
+    .gallery-card {
+      display: none;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .gallery-card.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .gallery-card img { display: block; width: 100%; height: auto; background: #ffffff; }
+    .gallery-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 24px; gap: 16px;
+      background: #ffffff;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+    .gallery-meta .pair {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 17px; font-weight: 600;
+      color: #111827;
+    }
+    .gallery-meta .tag {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 8px 14px;
+      border-radius: 100px;
+      color: #fff;
+      background: var(--accent-grad);
+      box-shadow: 0 6px 18px -6px rgba(124,92,255,0.5);
+      border: none;
+    }
+    .gallery-meta .tag::before {
+      content: ''; width: 7px; height: 7px; border-radius: 50%;
+      background: #fff; box-shadow: 0 0 8px rgba(255,255,255,0.9);
+    }
+    .gallery-meta .tag.synth    { background: linear-gradient(115deg, #7c5cff, #b58bff); }
+    .gallery-meta .tag.scan     { background: linear-gradient(115deg, #23d5ab, #4ae3c0); }
+    .gallery-meta .tag.wild     { background: linear-gradient(115deg, #ff6b9d, #ffb86b); }
+
+    /* Comparison */
+    .compare-stack { display: grid; gap: 20px; margin-top: 28px; }
+    .compare-stack .panel-image { border: 1px solid var(--border); }
+
+    /* Bibtex */
+    .bibtex {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 22px 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      overflow-x: auto;
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute; top: 12px; right: 12px;
+      background: var(--panel-2);
+      border: 1px solid var(--border-strong);
+      color: var(--text-dim);
+      padding: 6px 12px; border-radius: 8px;
+      font-family: inherit; font-size: 12px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { color: var(--text); background: #222839; }
+
+    footer {
+      padding: 44px 0;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 13.5px;
+      text-align: center;
+    }
+    footer a { color: var(--text-dim); }
+
+    p { color: var(--text-dim); }
+    .lead { font-size: 17px; line-height: 1.8; color: var(--text-dim); }
+    .caption { margin-top: 14px; color: var(--text-muted); font-size: 13.5px; text-align: center; }
+    strong { color: var(--text); }
+
+    .frame {
+      position: relative;
+      border-radius: var(--radius-lg);
+      padding: 1px;
+      background: linear-gradient(140deg, rgba(124,92,255,0.4), rgba(35,213,171,0.3), rgba(255,107,157,0.35));
+    }
+    .frame > * {
+      border-radius: calc(var(--radius-lg) - 1px);
+      background: #ffffff;
+      overflow: hidden;
+      display: block;
+    }
+    .frame img { display: block; width: 100%; height: auto; background: #ffffff; }
+  </style>
 </head>
-
 <body>
 
+<div class="bg-grid"></div>
+<div class="bg-orbs"></div>
 
+<!-- NAV -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span>SemMorph<span class="gradient-text">3D</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#experiments">Experiments</a>
+      <a href="#benchmark">TexMorph</a>
+      <a href="#userstudy">User Study</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
 <section class="hero">
-    <div class="hero-body">
-      <div class="container is-max-desktop">
-        <div class="columns is-centered">
-          <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">GaussianMorphing:<br>Mesh-Guided 3D Gaussians for Semantic-Aware Object Morphing
-            </h1>
-            <!-- <div class="is-size-5 publication-authors">
-            
-              <div class="subtitle is-4 has-text-weight-light">
-                <span>Mengtian Li<sup>1,2</sup>,</span>
-                <span>Qile He<sup>1</sup>,</span>
-                <span>Youjia Zhu<sup>1</sup>,</span>
-                <span>Qiwei He<sup>1</sup>,</span>
-                <span>Mengtian Li<sup>1,2</sup>†</span></div>
-              <div class="subtitle is-5 has-text-weight-light mb-1"><sup>1</sup>Shanghai University</div>
-              <div class="subtitle is-5 has-text-weight-light"><sup>2</sup>Shanghai Engineering Research Center of Motion Picture Special Effects</div>
-            </div> -->
-            <div class="is-size-5 publication-authors">
-  <!-- Paper authors -->
-            <div class="subtitle is-4 has-text-weight-light">
-              <div class="author-line">
-                <span><strong>Mengtian Li</strong><sup>1,5</sup>,</span>
-                <span><strong>Yunshu Bai</strong><sup>1</sup>,</span>
-                <span><strong>Yimin Chu</strong><sup>1</sup>,</span>
-                <span><strong>Yijun Shen</strong><sup>1</sup>,</span>
-              </div>
-            <div class="author-line">
-                <span><strong>Zhongmei Li</strong><sup>3</sup>,</span>
-                <span><strong>Weifeng Ge</strong><sup>4</sup>,</span>
-                <span><strong>Zhifeng Xie</strong><sup>1,5</sup>,</span>
-                <span><strong>Chaofeng Chen</strong><sup>2,</sup>†</span>
-            </div>
-            </div>
-              <div class="subtitle is-5 has-text-weight-light mb-1">
-                 <sup>1</sup>Shanghai University, <sup>2</sup>Wuhan University, <sup>3</sup>East China University of Science and Technology
-              </div>
-              <div class="subtitle is-5 has-text-weight-light">
-                 <sup>4</sup>Fudan University, <sup>5</sup>Shanghai Engineering Research Center of Motion Picture Special Effects
-              </div>
-            </div>
+  <div class="container">
+    <h1 class="title-hero">
+      <span class="gradient-text">SemMorph3D</span><br>
+      Unsupervised Semantic-Aware 3D Morphing<br>
+      via Mesh-Guided Gaussians
+    </h1>
 
-            <!-- <div class="is-size-5 publication-authors">
-                    <span class="author-block">Under Review</span>
-                  </div> -->
+    <div class="authors">
+      <span class="name">Mengtian Li</span><sup>1,4</sup>,
+      <span class="name">Yunshu Bai</span><sup>1</sup>,
+      <span class="name">Yimin Chu</span><sup>1</sup>,
+      <span class="name">Xinru Guo</span><sup>1</sup>,
+      <span class="name">Haolin Liu</span><sup>3</sup>,
+      <span class="name">Zhifeng Xie</span><sup>1,4</sup>,
+      <span class="name">Chaofeng Chen</span><sup>2,†</sup>
+    </div>
+    <div class="affils">
+      <sup>1</sup>Shanghai University<span class="sep">·</span>
+      <sup>2</sup>School of Artificial Intelligence, Wuhan University<span class="sep">·</span>
+      <sup>3</sup>Tencent<span class="sep">·</span>
+      <sup>4</sup>Shanghai Engineering Research Center of Motion Picture Special Effects
+      <div class="corresponding">† Corresponding author</div>
+    </div>
 
-            <div class="column has-text-centered">
-              <div class="publication-links">
-                <!-- Arxiv PDF link -->
-                <span class="link-block">
-                  <a href="static/GaussianMorphing.pdf" target="_blank"
-                    class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                    </span>
-                    <span>Paper</span>
-                  </a>
-                </span>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://arxiv.org/abs/2510.02034" target="_blank" rel="noopener">
+        <i class="fa-solid fa-file-pdf"></i> Paper
+      </a>
+      <a class="btn" href="https://www.youtube.com/watch?v=FDUCKIgCHGI" target="_blank" rel="noopener">
+        <i class="fa-brands fa-youtube"></i> Demo Video
+      </a>
+      <a class="btn" href="https://github.com/baiyunshu/gaussionmorphing" target="_blank" rel="noopener">
+        <i class="fa-brands fa-github"></i> Code (coming soon)
+      </a>
+    </div>
 
+    <div class="morph-strip">
+      <span class="arrow"></span>
+      <span>source</span>
+      <span style="color: var(--accent-1);">◆</span>
+      <span class="gradient-text" style="font-weight:600;">morph</span>
+      <span style="color: var(--accent-2);">◆</span>
+      <span>target</span>
+      <span class="arrow"></span>
+    </div>
 
-
-                <!-- ArXiv abstract Link -->
-                <span class="link-block">
-                  <a href="https://arxiv.org/abs/2510.02034" target="_blank"
-                  class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                    <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-                
-              <span class="link-block">
-                    <a href="https://github.com/baiyunshu/gaussionmorphing" target="_blank"
-                    class="external-link button is-normal is-rounded is-dark">
-                    <span class="icon">
-                      <i class="fab fa-github"></i>
-                    </span>
-                    <span>Code(coming soon)</span>
-                  </a>
-                </span>
-              </div>
-
-              <!-- Github link -->
-
-                <!-- <div class="hero-body"> -->
-                <div class="container has-text-centered">
-    
-                <div class="publication-video">
-              <!-- Youtube embed code here -->
-                  <iframe src="static/demo.mp4" frameborder="0" allow="autoplay; encrypted-media"
-                allowfullscreen></iframe>
-                </div>
-              </div>
-               <!-- </div>               -->
-              <!-- Added image here -->
-              <!-- <div class="row center" style="width: 100%; margin: 2em auto 0 auto">
-                <div class="col s10 offset-s1">
-                  <img class="responsive-img" src="static/images/teaser.png" style="max-width: 100%; height: auto;"/>
-                </div>
-              </div> -->
-            </div>
-          </div>
-        </div>
+    <div class="video-wrap">
+      <div style="position: relative; width: 100%; padding-top: 56.25%;">
+        <iframe
+          src="https://www.youtube.com/embed/FDUCKIgCHGI"
+          title="SemMorph3D Demo Video"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+          style="position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;">
+        </iframe>
       </div>
     </div>
-  </section>
+    <p class="caption">Method overview and representative 3D morphing results.</p>
+  </div>
+</section>
 
-  <section class="section hero is-light">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
-          <!-- Image moved above the abstract title -->
+<!-- TEASER + ABSTRACT -->
+<section class="block" id="abstract">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <span class="eyebrow"><span class="dot"></span> Overview</span>
+      <h2 class="section-title">What if 3D objects could morph <span class="gradient-text">without losing topology</span>?</h2>
+      <p class="section-sub" style="margin: 14px auto 0;">
+        Photorealistic Gaussians fracture during deformation. Rigid meshes demand clean inputs.
+        SemMorph3D bridges both worlds.
+      </p>
+    </div>
 
-          <h2 class="title is-3">Abstract</h2>
-          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6;">
-              <div class="row center" style="width: 100%; margin: 2em auto 0 auto">
-                <div class="col s10 offset-s1">
-                  <img class="responsive-img" src="static/images/teaser.png" style="max-width: 100%; height: auto;"/>
-                </div>
-              </div>
-            <p>
-              We introduce <strong>GaussianMorphing</strong>, a novel framework for semantic-aware 3D shape and texture morphing from
-              multiview images. Unlike conventional approaches constrained to point clouds or correspondence-aligned
-              untextured data, our approach leverages mesh-guided 3D Gaussian Splatting (3DGS) to achieve high-fidelity
-              appearance and geometry representation. On the one hand, our unified mesh-guided Gaussian deformation
-              strategy ensures geometrically consistent deformation by binding 3DGS points to reconstructed mesh patches
-              while preserving texture fidelity through topology-aware constraints. On the other hand, the framework
-              establishes unsupervised semantic correspondence by exploiting mesh topology as a geometric prior, while
-              maintaining structural integrity through physically plausible point trajectory constraints. This
-              integrated approach maintains both local geometric details and global semantic coherence throughout the
-              morphing process without requiring labeled data. Experimental results show that GaussianMorphing
-              outperforms prior 2D/3D morphing methods, with a color consistency (∆E) reduction of 22.2% and an EI
-              reduction of 26.2% on our proposed <strong>TexMorph</strong> benchmark.
-            </p>
-          </div>
-        </div>
+    <div class="frame" style="margin-bottom: 44px;">
+      <div><img src="project_page/static/images/teaser.png" alt="SemMorph3D teaser"></div>
+    </div>
+
+    <div class="panel">
+      <h3 style="font-size: 22px; margin-bottom: 14px;">Abstract</h3>
+      <p class="lead">
+        We introduce <strong>SemMorph3D</strong>, a novel framework for semantic-aware 3D shape and texture morphing
+        directly from multi-view images. While 3D Gaussian Splatting (3DGS) enables photorealistic rendering,
+        its unstructured nature often leads to catastrophic geometric fragmentation during morphing. Conversely,
+        traditional mesh-based morphing enforces structural integrity but mandates pristine input topology and
+        struggles with complex appearances. Our method resolves this dichotomy by employing a
+        <strong>mesh-guided strategy</strong> where a coarse, extracted base mesh acts as a flexible geometric anchor,
+        providing the topological scaffolding to guide unstructured Gaussians. We further propose a
+        <strong>dual-domain optimization</strong> that establishes unsupervised semantic correspondence, synergizing
+        geodesic regularization for shape preservation with texture-aware constraints for coherent color evolution.
+        On the proposed <strong>TexMorph</strong> benchmark, SemMorph3D substantially outperforms prior 2D and 3D methods,
+        reducing color consistency error (ΔE) by <strong>22.2%</strong> and EI by <strong>26.2%</strong>.
+      </p>
+
+      <div class="stats">
+        <div class="stat"><div class="num">−22.2%</div><div class="label">Color error (ΔE)</div></div>
+        <div class="stat"><div class="num">−26.2%</div><div class="label">Edge incoherence (EI)</div></div>
+        <div class="stat"><div class="num">10+</div><div class="label">Object categories</div></div>
+        <div class="stat"><div class="num">0</div><div class="label">Labels required</div></div>
       </div>
     </div>
-  </section>
 
-  <!-- End paper abstract -->
-
-  <!-- Paper abstract -->
-
-<section class="section hero is-fullhd">
-  <div class="container is-fullhd">
-    <!-- 标题 -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column">
-        <h2 class="title is-3" style="white-space: nowrap; margin-bottom: 2rem;">Method Overview</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon"><i class="fa-solid fa-diagram-project"></i></div>
+        <h4>Mesh-Guided Gaussians</h4>
+        <p>A coarse extracted mesh acts as a deformable anchor, compensating for topological artifacts in 3DGS.</p>
       </div>
-    </div>
-    
-    <!-- 图片 -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column">
-        <div style="width: 100%; margin: 0 auto 2rem;">
-          <img src="static/images/pipelineiclr.png" 
-               style="width: 80%; max-width: 900px; height: auto;"
-               alt="Method Overview" />
-        </div>
+      <div class="feature">
+        <div class="feature-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <h4>Dual-Domain Optimization</h4>
+        <p>Geodesic shape regularization meets texture-aware color flow — jointly solved in a hybrid representation.</p>
       </div>
-    </div>
-    
-    <!-- 摘要内容 - 修改为与图片同宽 -->
-    <div class="columns is-centered">
-      <div class="column">
-        <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6; width: 80%; max-width: 900px; margin: 0 auto;">
-          <p>
-            We propose <strong>GaussianMorphing</strong>, a novel framework for textured 3D morphing. The input consists of image
-            sequences for the source object X and target object Y. To achieve edge-continuous and smooth results, we
-            implement a mesh-guided strategy by extracting surface meshes from the 3D representations obtained by 3D
-            Gaussian Splatting and bind Gaussian points to the mesh. Geometric features, derived from the mesh, are
-            used to compute a correspondence matrix ΠXY , while texture features are extracted from the Gaussian
-            points. A series of time steps t ∈ [0,1] is fed into the interpolator Ω, generating intermediate shapes
-            X(t) and Y(t). The output is a high-quality, textured 3D morphing result, seamlessly blending geometry and
-            appearance.(Up:3D morphing results with Blender. Down:geometric correspondence with Matplotlib)
-          </p>
-        </div>
+      <div class="feature">
+        <div class="feature-icon"><i class="fa-solid fa-seedling"></i></div>
+        <h4>Fully Unsupervised</h4>
+        <p>No labels, no category templates, no specialized 3D assets. Correspondence emerges from the data.</p>
       </div>
     </div>
   </div>
 </section>
-  <!-- End paper abstract -->
 
-  <!-- Paper abstract -->
-  <section class="section hero is-light">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
+<!-- METHOD -->
+<section class="block" id="method">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <span class="eyebrow"><span class="dot"></span> Method</span>
+      <h2 class="section-title">Pipeline Overview</h2>
+      <p class="section-sub" style="margin: 14px auto 0;">
+        From multi-view images to textured 3D morphs through a unified mesh + Gaussian representation.
+      </p>
+    </div>
 
-          <!-- 标题 -->
-          <h2 class="title is-3">TexMorph Benchmark</h2>
+    <div class="frame">
+      <div><img src="project_page/static/images/pipeline.png" alt="SemMorph3D pipeline"></div>
+    </div>
 
-          <!-- 图片 -->
-          <div style="width: 100%; margin: 1em auto;">
-            <img src="static/images/dataset.png" style="width: 100%; height: auto;" alt="TexMorph Benchmark Image">
-          </div>
+    <div class="panel" style="margin-top: 28px;">
+      <p class="lead" style="margin:0;">
+        <strong>SemMorph3D</strong> performs high-quality 3D morphing between a source <em>X</em> and a target
+        <em>Y</em> given only their multi-view image observations. We first extract surface meshes from 3D Gaussian
+        Splatting to align geometry and texture. Using the learned correspondence matrix <strong>Π<sub>XY</sub></strong>,
+        intermediate shapes are interpolated and refined through a joint shape-and-texture loss — producing morphs
+        that are geometrically stable, chromatically faithful, and topologically consistent.
+      </p>
+    </div>
+  </div>
+</section>
 
-          <!-- 描述文字 -->
-          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6;">
-            <p>
-Our new morphing benchmark, TexMorph, leverages high-precision synthetic object models crafted by artists and 3D object models captured from real scenes, forming a diverse dataset that spans multiple object categories.The dataset includes over ten categories of objects, such as synthetic and real-world collected (scanning model and photo) fruits, animals, furniture, vehicles, and more.We utilize this benchmark to conduct both qualitative and quantitative tests on the baselines mentioned below, evaluating the superiority of our method.
-            </p>
-          </div>
+<!-- RESULTS GALLERY -->
+<section class="block" id="results">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <span class="eyebrow"><span class="dot"></span> Results</span>
+      <h2 class="section-title">Result <span class="gradient-text">Gallery</span></h2>
+      <p class="section-sub" style="margin: 14px auto 0;">
+        Morphs across synthetic assets, 3D scans, and in-the-wild mobile phone captures.
+      </p>
+    </div>
 
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tab="g1">Apple → Banana</button>
+      <button class="tab" data-tab="g2">Zucchini → Orange</button>
+      <button class="tab" data-tab="g3">Bowl → Plate</button>
+      <button class="tab" data-tab="g4">Shiitake → Morel</button>
+      <button class="tab" data-tab="g5">Shiitake → White Mushroom</button>
+    </div>
+
+    <div class="gallery">
+      <div class="gallery-card active" id="g1">
+        <img src="project_page/static/images/appleyin.png" alt="Apple to Banana morphing">
+        <div class="gallery-meta">
+          <span class="pair">Apple <span class="gradient-text">→</span> Banana</span>
+          <span class="tag synth">Synthetic</span>
         </div>
       </div>
-    </div>
-  </section>
-
-
-
-
-<section class="hero is-small">
-  <div class="hero-body">
-    <div class="container has-text-centered">
-      <h2 class="title is-3">Result Gallery</h2>
-      <div id="results-carousel" class="carousel results-carousel" style="max-width: 800px; margin: 0 auto;">
-        <div class="item" style="position: relative; margin-bottom: 30px;">
-          <h2 class="title is-4 has-text-left">Synthetic Data</h2>
-          <div class="container">
-            <img src="static/images/appleyin.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
-            <h2 class="subtitle has-text-centered">apple -> banana</h2>
-          </div>
+      <div class="gallery-card" id="g2">
+        <img src="project_page/static/images/zuchiyin.png" alt="Zucchini to Orange morphing">
+        <div class="gallery-meta">
+          <span class="pair">Zucchini <span class="gradient-text">→</span> Orange</span>
+          <span class="tag synth">Synthetic</span>
         </div>
-
-        <div class="item" style="position: relative; margin-bottom: 30px;">
-          <h2 class="title is-4 has-text-left">Synthetic Data</h2>
-          <img src="static/images/zuchiyin.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
-          <h2 class="subtitle has-text-centered">zucchini -> orange</h2>
+      </div>
+      <div class="gallery-card" id="g3">
+        <img src="project_page/static/images/bowyin.png" alt="Bowl to Plate morphing">
+        <div class="gallery-meta">
+          <span class="pair">Bowl <span class="gradient-text">→</span> Plate</span>
+          <span class="tag scan">Real 3D Scan</span>
         </div>
-
-        <div class="item" style="position: relative; margin-bottom: 30px;">
-          <h2 class="title is-4 has-text-left">Real Scan Data</h2>
-          <img src="static/images/bowyin.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
-          <h2 class="subtitle has-text-centered">bowl -> plate</h2>
+      </div>
+      <div class="gallery-card" id="g4">
+        <img src="project_page/static/images/mush1.png" alt="Shiitake to Morel morphing">
+        <div class="gallery-meta">
+          <span class="pair">Shiitake <span class="gradient-text">→</span> Morel</span>
+          <span class="tag wild">In-the-Wild Photo</span>
         </div>
-
-        <div class="item" style="position: relative; margin-bottom: 30px;">
-          <h2 class="title is-4 has-text-left">Real-World Photo</h2>
-          <img src="static/images/mush1.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
-          <h2 class="subtitle has-text-centered">shiitake -> morel</h2>
-        </div>
-
-        <div class="item" style="position: relative; margin-bottom: 30px;">
-          <h2 class="title is-4 has-text-left">Real-World Photo</h2>
-          <img src="static/images/mush2.png" alt="MY ALT TEXT" style="max-width: 80%; height: auto; max-height: 350px;" />
-          <h2 class="subtitle has-text-centered">shiitake -> white mushroom</h2>
+      </div>
+      <div class="gallery-card" id="g5">
+        <img src="project_page/static/images/mush2.png" alt="Shiitake to White Mushroom morphing">
+        <div class="gallery-meta">
+          <span class="pair">Shiitake <span class="gradient-text">→</span> White Mushroom</span>
+          <span class="tag wild">In-the-Wild Photo</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- EXPERIMENTS -->
+<section class="block" id="experiments">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <span class="eyebrow"><span class="dot"></span> Experiments</span>
+      <h2 class="section-title">Qualitative Comparison</h2>
+      <p class="section-sub" style="margin: 14px auto 0;">
+        Against six state-of-the-art 2D and 3D morphing baselines on the TexMorph benchmark.
+      </p>
+    </div>
 
-
-  <!-- End image carousel -->
-<section class="section hero is-light">
-    <div class="container is-fullhd">
-      <div class="columns is-centered has-text-centered">
-        <div class="column">
-          <h2 class="title is-3">Experiment</h2>
-          <div style="width: 100%; max-width: 900px; margin: 2em auto 0;">
-            <img src="static/images/compareall.jpg" style="width: 100%; height: auto;"
-              alt="Experiment Comparison" />
-          </div>
-          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6; margin-top: 2rem; max-width: 900px; margin-left: auto; margin-right: auto;">
-            <p>
-Qualitative Comparison of Morphing Methods on the Benchmark Dataset. The benchmark dataset evaluates four
-methods: (1) DiffMorpher (Zhang et al. 2024b) and (2) FreeMorph (Cao et al. 2025) for image morphing, (3) NeuroMorph
-(Eisenberger et al. 2021) for 3D shape morphing without textures, (4) MorphFlow (Tsai, Sun, and Chen 2022) for textured
-multi-view results but lacking true geometric information, and (5) Our Method, which generates textured 3D morphing with
-geometric details from image inputs.
-            </p>
-          </div>
-        </div>
+    <div class="compare-stack">
+      <div class="panel panel-image">
+        <img src="project_page/static/images/compareall.jpg" alt="Comparison overview">
+      </div>
+      <div class="panel panel-image">
+        <img src="project_page/static/images/compare.png" alt="Detailed comparison">
       </div>
     </div>
-  </section>
 
-
-
-  <!-- Youtube video -->
-
-  <!-- End youtube video -->
-
-  <!-- Paper abstract -->
-  <!-- <section class="section hero is small">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered has-text-centered">
-        <div class="column is-four-fifths">
-          <h2 class="title is-3">User Study</h2>
-          <div class="row center" style="width: 100%; margin: 1em auto 1em auto">
-            <div class="col s10 offset-s1">
-              <img class="responsive-img" src="static/images/userstudy.jpg" />
-            </div>
-          </div>
-          <div class="content has-text-justified" style="font-size: 1.2rem; line-height: 1.6;">
-            <p>
-              Comparing our method with the baseline methods in terms of color consistency, structural similarity, and
-              edge continuity. A higher percentage of participants preferred our results across all metrics.
-              Conclusion-->
-
-            <!-- </p>
-          </div>
-        </div>
-      </div>
+    <div class="panel" style="margin-top: 28px;">
+      <p>
+        We compare against six methods: <strong>(1) DiffMorpher</strong> and <strong>(2) FreeMorph</strong> for image
+        morphing; <strong>(3) NeuroMorph</strong> for untextured 3D shape morphing; <strong>(4) MorphFlow</strong> for
+        textured multi-view output without true geometry; <strong>(5) Interp3D</strong> for 3D shape morphing without
+        explicit point-wise correspondence; and <strong>(6) Ours</strong>, which produces textured 3D morphs with
+        geometric detail directly from image inputs. Our approach uniquely preserves both geometric integrity and
+        appearance coherence across the entire morph trajectory.
+      </p>
     </div>
-  </section> -->
-  <!-- End paper abstract -->
+  </div>
+</section>
 
-
-
-  <!-- Paper poster -->
-  <!-- <section class="hero is-small ">
-  <div class="hero-body">
-    <div class="container">
-      <h2 class="title">Poster</h2>
-
-      <iframe  src="static/pdfs/AAAI_Press_Formatting_Instructions_for_Authors_Using_LaTeX(1).pdf" width="100%" height="550">
-          </iframe>
-        
-      </div>
+<!-- BENCHMARK -->
+<section class="block" id="benchmark">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <span class="eyebrow"><span class="dot"></span> Benchmark</span>
+      <h2 class="section-title">The <span class="gradient-text">TexMorph</span> Benchmark</h2>
+      <p class="section-sub" style="margin: 14px auto 0;">
+        A texture-rich, morphing-focused evaluation suite spanning synthetic, scanned, and in-the-wild 3D objects.
+      </p>
     </div>
-  </section> -->
-  <!--End paper poster -->
 
-
-  <!--BibTex citation -->
-  <!-- <section class="section" id="BibTeX">
-    <div class="container is-max-desktop content">
-      <h2 class="title">BibTeX</h2>
-      <pre><code>BibTex Code Here</code></pre>
+    <div class="frame">
+      <div><img src="project_page/static/images/dataset.png" alt="TexMorph benchmark"></div>
     </div>
-  </section> -->
-  <!--End BibTex citation -->
 
-
-  <!-- <footer class="footer">
-    <div class="container">
-      <div class="columns is-centered">
-        <div class="column is-8">
-          <div class="content">
-
-
-
-          </div>
-        </div>
-      </div>
+    <div class="panel" style="margin-top: 28px;">
+      <p>
+        To rigorously evaluate 3D morphing from multi-view images, we propose <strong>TexMorph</strong>
+        (Texture-rich, Morphing-focused). The benchmark comprises challenging source–target pairs designed to
+        stress both geometric and appearance transformations, including:
+        <strong>(1)</strong> high-fidelity synthetic models with complex textures rendered from multiple viewpoints;
+        <strong>(2)</strong> real-world objects captured via 3D scanning; and
+        <strong>(3)</strong> objects captured in-the-wild using standard mobile phone cameras.
+        The dataset features over ten object categories — animals, fruits, furniture and more — offering diverse
+        topological and textural challenges.
+      </p>
     </div>
-  </footer> -->
+  </div>
+</section>
 
-  <!-- Statcounter tracking code -->
+<!-- USER STUDY -->
+<section class="block" id="userstudy">
+  <div class="container">
+    <div style="text-align:center; margin-bottom: 40px;">
+      <span class="eyebrow"><span class="dot"></span> Perceptual Evaluation</span>
+      <h2 class="section-title">User Study</h2>
+      <p class="section-sub" style="margin: 14px auto 0;">
+        Human preference consistently favors our morphs across color consistency, structure, and edge continuity.
+      </p>
+    </div>
 
-  <!-- You can add a tracker to track page visits by creating an account at statcounter.com -->
+    <div class="frame">
+      <div><img src="project_page/static/images/userstudy.jpg" alt="User study"></div>
+    </div>
 
-  <!-- End of Statcounter Code -->
+    <div class="panel" style="margin-top: 28px;">
+      <p>
+        We conducted a user study comparing <strong>SemMorph3D</strong> against the baselines along three perceptual
+        axes: <strong>color consistency</strong>, <strong>structural similarity</strong>, and
+        <strong>edge continuity</strong>. Across all three, participants overwhelmingly preferred our results,
+        confirming that the gains reported by our quantitative metrics translate to tangible perceptual quality.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- BIBTEX -->
+<section class="block" id="bibtex">
+  <div class="container">
+    <div style="margin-bottom: 28px;">
+      <span class="eyebrow"><span class="dot"></span> Citation</span>
+      <h2 class="section-title">BibTeX</h2>
+    </div>
+    <div class="bibtex">
+      <button class="copy-btn" onclick="copyBib()"><i class="fa-regular fa-copy"></i> Copy</button>
+<pre id="bib" style="margin:0; white-space:pre-wrap; color: var(--text-muted); font-style: italic;">Citation will be available upon publication.</pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>
+      Custom-designed project page · inspired by
+      <a href="https://nerfies.github.io" target="_blank" rel="noopener">Nerfies</a>.
+      Released under CC-BY-SA 4.0.
+    </p>
+  </div>
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const cards = document.querySelectorAll('.gallery-card');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    cards.forEach(c => c.classList.remove('active'));
+    t.classList.add('active');
+    const id = t.getAttribute('data-tab');
+    document.getElementById(id).classList.add('active');
+  }));
+
+  function copyBib() {
+    const text = document.getElementById('bib').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      const html = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+      setTimeout(() => btn.innerHTML = html, 1600);
+    });
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = 1;
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.block, .hero').forEach(el => {
+    el.style.opacity = 0;
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    io.observe(el);
+  });
+</script>
 
 </body>
-
 </html>
